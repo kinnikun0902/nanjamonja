@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>なんじゃもんじゃ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: にぎやかなパーティーゲーム。声を出して笑う夜。
+   IDEA: テーブルの上の山札とめくられたカード。
+   PICTURE: めくった瞬間のオリジナル生き物カードを大きく中央に。
+   COLOUR and TYPE: ひまわり色の卓、インクの紺、カードは白、差し色はコーラル。Dela Gothic One＋M PLUS Rounded。
+   LAYOUT: 左に山札とカード、右にプレイヤー。600px未満は縦積み。 */
+:root{color-scheme:light dark;--bg:light-dark(#ffd84d,#1b1f3b);--table:light-dark(#ffc928,#252b52);--ink:light-dark(#22183a,#f4efff);--card:#fffdf7;--cardink:#22183a;--soft:light-dark(rgba(34,24,58,.08),rgba(255,255,255,.08));--line:light-dark(#22183a,#f4efff);--acc:#ff5d73;--muted:light-dark(#5b4d73,#b9b2d6)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c",system-ui,sans-serif;overflow-x:clip;min-height:100vh;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.25) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.18) 0 2px,transparent 3px);background-size:46px 46px,62px 62px}
+h1{font:400 clamp(30px,5vw,46px)/1.05 "Dela Gothic One",sans-serif;margin:0;letter-spacing:.02em}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px max(4vw,16px) 6px;max-width:1240px;margin:auto}
+header p{margin:2px 0 0;color:var(--muted);font-size:14px}
+main{max-width:1240px;margin:auto;padding:10px max(4vw,16px) 40px}
+button,input,select{font:inherit;font-size:16px}
+button{min-height:44px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--cardink);font-weight:800;padding:6px 16px;cursor:pointer;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button.pri{background:var(--acc);color:#fff}
+button.ghost{background:transparent;color:var(--ink);box-shadow:none;border-width:2px}
+button:disabled{opacity:.45;cursor:default}
+input,select{min-height:44px;border:3px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--card);color:var(--cardink)}
+.panel{background:var(--table);border:3px solid var(--line);border-radius:24px;padding:clamp(16px,3vw,28px);box-shadow:0 8px 0 var(--line)}
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+.parade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.parade .mini{background:var(--card);border:3px solid var(--line);border-radius:16px;aspect-ratio:1}
+.mini svg{width:100%;height:100%;display:block}
+.plist{display:grid;gap:8px;margin:10px 0 14px}
+.prow{display:flex;gap:8px}.prow input{flex:1}
+.opts{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.opts label{display:grid;gap:4px;font-weight:700;font-size:14px}
+.rules{font-size:14px;color:var(--muted);margin:14px 0 0;padding-left:1.2em}
+/* game */
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:24px;align-items:start}
+.tablebox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,3vw,30px);align-items:center}
+.deck{display:grid;gap:10px;justify-items:center}
+.back{width:clamp(96px,14vw,140px);aspect-ratio:3/4;border:3px solid var(--line);border-radius:18px;background:repeating-linear-gradient(45deg,#ff5d73 0 12px,#ff7d8f 12px 24px);box-shadow:4px 4px 0 var(--line),8px 8px 0 var(--line);display:grid;place-items:center;color:#fff;font:400 22px "Dela Gothic One";text-shadow:0 2px 0 #22183a;cursor:pointer}
+.back.empty{background:var(--soft);box-shadow:none;border-style:dashed;cursor:default;color:var(--muted);text-shadow:none;font-size:14px}
+.count{font-weight:800;font-size:14px}
+.pilewrap{display:grid;justify-items:center;gap:12px}
+.card{width:min(100%,360px);aspect-ratio:3/4;background:var(--card);border:4px solid var(--line);border-radius:26px;box-shadow:0 10px 0 var(--line);display:grid;grid-template-rows:1fr auto;overflow:hidden;position:relative}
+.card svg{width:100%;height:100%;display:block}
+.card .tag{background:var(--cardink);color:#fff;text-align:center;font-weight:800;padding:8px;font-size:15px;min-height:42px}
+.card.blank{display:grid;place-items:center;color:var(--muted);background:var(--soft);border-style:dashed;box-shadow:none;text-align:center;padding:20px}
+.flip{animation:flip .45s ease-out}
+@keyframes flip{from{transform:perspective(800px) rotateY(90deg) scale(.9)}to{transform:none}}
+.pilen{position:absolute;top:10px;right:10px;background:var(--acc);color:#fff;font-weight:800;border:3px solid var(--cardink);border-radius:999px;padding:0 10px;font-size:14px}
+.action{margin-top:18px;display:grid;gap:12px}
+.prompt{font:400 clamp(20px,3vw,28px)/1.2 "Dela Gothic One";text-align:center;margin:0}
+.namebox{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.namebox input{flex:1 1 220px;max-width:340px}
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.who button{font-size:17px}
+.sub{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.toast{text-align:center;font-weight:800;min-height:1.6em}
+.score h2,.dex h2{font:400 20px "Dela Gothic One";margin:0 0 10px}
+.score ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.score li{display:flex;justify-content:space-between;gap:8px;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700}
+.score li b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.score li .k{opacity:.5;font-size:13px;margin-right:6px}
+.side{display:grid;gap:18px}
+.dex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dex h2{grid-column:1/-1}
+.dex figure{margin:0;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:12px;overflow:hidden;text-align:center;font-size:12px;font-weight:700}
+.dex figure svg{width:100%;aspect-ratio:1;display:block}
+.dex figcaption{padding:2px 4px 4px;overflow-wrap:anywhere}
+.hide{display:none!important}
+.overlay{position:fixed;inset:0;background:rgba(20,14,40,.6);display:grid;place-items:center;padding:16px;z-index:5}
+.overlay .panel{max-width:440px;width:100%;text-align:center}
+.overlay ol{text-align:left;padding-left:1.4em;font-weight:700;font-size:18px}
+.note{font-size:13px;color:var(--muted)}
+@media(max-width:860px){.game,.setup{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.tablebox{grid-template-columns:minmax(0,1fr)}.deck{grid-auto-flow:column;align-items:center;justify-content:center}.back{width:84px}.parade{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.flip{animation:none}button{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>なんじゃもんじゃ</h1><p>めくって、名づけて、叫べ！ 1台を囲んでも、画面共有でも遊べます</p></div>
+  <div class="sub"><button class="ghost hide" id="undoBtn">ひとつ戻す</button><button class="ghost hide" id="quitBtn">設定にもどる</button></div>
+</header>
+<main>
+  <section id="setup" class="setup">
+    <div class="panel">
+      <div class="parade" id="parade"></div>
+      <p class="note">登場するのは全12種のオリジナル生き物たち</p>
+    </div>
+    <div class="panel">
+      <h2 style="font:400 22px 'Dela Gothic One';margin:0">プレイヤー</h2>
+      <div class="plist" id="plist"></div>
+      <button class="ghost" id="addP">＋ プレイヤーを追加</button>
+      <div class="opts">
+        <label>生き物の種類<select id="kinds"><option value="6">6種（かんたん）</option><option value="9">9種</option><option value="12" selected>12種（本気）</option></select></label>
+        <label>1種あたりの枚数<select id="per"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
+      </div>
+      <button class="pri" id="startBtn" style="width:100%">ゲームスタート</button>
+      <ol class="rules">
+        <li>山札を1枚めくる。はじめて見る生き物なら、めくった人が名前をつける。</li>
+        <li>見たことのある生き物が出たら、その名前を一番早く叫んだ人が場のカードを全部もらう。</li>
+        <li>誰も言えなければカードは場に残り、次の勝者がまとめて獲得。山札が尽きたら一番多く持っている人の勝ち！</li>
+      </ol>
+      <p class="note">ショートカット：Space でめくる／数字キーでその番号のプレイヤーに得点</p>
+    </div>
+  </section>
+
+  <section id="game" class="game hide">
+    <div class="panel">
+      <div class="tablebox">
+        <div class="deck"><div class="back" id="deckEl" role="button" tabindex="0" aria-label="山札をめくる">めくる</div><div class="count" id="deckN"></div></div>
+        <div class="pilewrap" id="pileEl"></div>
+      </div>
+      <div class="action" id="actionEl"></div>
+    </div>
+    <div class="side">
+      <div class="panel score"><h2>獲得カード</h2><ol id="scoreEl"></ol></div>
+      <div class="panel dex" id="dexEl"></div>
+    </div>
+  </section>
+</main>
+<div class="overlay hide" id="endEl"><div class="panel"><h2 style="font:400 28px 'Dela Gothic One';margin:0 0 6px">けっか発表！</h2><ol id="resultEl"></ol><div class="sub"><button class="pri" id="againBtn">同じメンバーでもう一度</button><button id="toSetup">設定にもどる</button></div></div></div>
+
+<script>
+{
+const KINDS=[
+ {c:'#f4a63a',b:0,e:2,m:0,x:'tuft'},{c:'#4fb3a9',b:1,e:1,m:2,x:'antenna'},{c:'#e8546b',b:2,e:3,m:1,x:'',sp:1},
+ {c:'#8a6fd6',b:3,e:2,m:3,x:'horns'},{c:'#5aa0e6',b:4,e:2,m:0,x:'crown',sl:1},{c:'#f2d14b',b:5,e:1,m:4,x:'ears'},
+ {c:'#7cc35a',b:6,e:3,m:2,x:'horns'},{c:'#d96fb5',b:0,e:1,m:3,x:'antenna',sp:1},{c:'#f07f4f',b:1,e:2,m:1,x:'ears'},
+ {c:'#3d4a8f',b:2,e:2,m:4,x:'tuft',sl:1},{c:'#45c4d8',b:3,e:1,m:0,x:'crown'},{c:'#a3754f',b:4,e:3,m:2,x:'horns',sp:1}];
+const TOP=[57,45,38,42,30,43,70];
+const O='#22183a';
+const shade=(h,a)=>{const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const f=v=>Math.round(Math.max(0,Math.min(255,v+(a<0?v*a:(255-v)*a))));return`rgb(${f(r)},${f(g)},${f(b)})`};
+function body(t,c){
+  const s=`fill="${c}" stroke="${O}" stroke-width="4" stroke-linejoin="round"`;
+  if(t===0)return`<ellipse cx="100" cy="115" rx="62" ry="58" ${s}/>`;
+  if(t===1)return`<rect x="58" y="45" width="84" height="125" rx="40" ${s}/>`;
+  if(t===2)return`<path d="M100 38C122 38 168 148 160 165C150 178 50 178 40 165C32 148 78 38 100 38Z" ${s}/>`;
+  if(t===3){let p=[];for(let i=0;i<18;i++){const a=i/18*Math.PI*2-Math.PI/2,r=i%2?54:70;p.push((100+r*Math.cos(a)).toFixed(1)+','+(115+r*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(' ')}" ${s}/>`}
+  if(t===4)return`<path d="M100 30C130 80 165 110 160 140C155 176 45 176 40 140C35 110 70 80 100 30Z" ${s}/>`;
+  if(t===5)return`<path d="M62 150C30 150 30 102 62 100C58 70 92 55 108 72C128 50 168 70 150 102C178 112 168 158 138 152C128 172 76 172 62 150Z" ${s}/>`;
+  return`<rect x="35" y="70" width="130" height="98" rx="24" ${s}/>`;
+}
+function extra(x,T,c){
+  const d=shade(c,-.3),M=g=>g+`<g transform="translate(200 0) scale(-1 1)">${g}</g>`;
+  if(x==='tuft')return`<g fill="none" stroke="${O}" stroke-width="5" stroke-linecap="round"><path d="M94 ${T+4}q-10 -16 -4 -28"/><path d="M100 ${T+2}q2 -20 8 -30"/><path d="M106 ${T+4}q10 -12 16 -18"/></g>`;
+  if(x==='antenna')return M(`<line x1="86" y1="${T+6}" x2="72" y2="${T-24}" stroke="${O}" stroke-width="4"/><circle cx="72" cy="${T-28}" r="8" fill="#ffd23f" stroke="${O}" stroke-width="3"/>`);
+  if(x==='horns')return M(`<path d="M80 ${T+14}Q64 ${T-10}72 ${T-26}Q86 ${T-8}92 ${T+10}Z" fill="#fff4dc" stroke="${O}" stroke-width="3.5" stroke-linejoin="round"/>`);
+  if(x==='ears')return M(`<ellipse cx="56" cy="${T+20}" rx="14" ry="26" transform="rotate(-28 56 ${T+20})" fill="${d}" stroke="${O}" stroke-width="4"/>`);
+  if(x==='crown')return`<path d="M80 ${T+8}L78 ${T-18}L90 ${T-6}L100 ${T-24}L110 ${T-6}L122 ${T-18}L120 ${T+8}Z" fill="#ffd23f" stroke="${O}" stroke-width="3.5" stroke-linejoin="round"/>`;
+  return'';
+}
+function eyes(n,sl,y){
+  const xs=n===1?[100]:n===2?[80,120]:[72,100,128],r=n===1?20:n===2?13:10;
+  return xs.map((x,i)=>{const yy=y-(n===3&&i===1?8:0);
+    if(sl)return`<path d="M${x-r} ${yy}q${r} ${r*.9} ${r*2} 0" fill="none" stroke="${O}" stroke-width="4" stroke-linecap="round"/>`;
+    return`<circle cx="${x}" cy="${yy}" r="${r}" fill="#fff" stroke="${O}" stroke-width="3.5"/><circle cx="${x+r*.25}" cy="${yy+r*.15}" r="${r*.5}" fill="${O}"/><circle cx="${x+r*.4}" cy="${yy-r*.1}" r="${r*.16}" fill="#fff"/>`}).join('');
+}
+function mouth(m){
+  if(m===0)return`<path d="M82 135Q100 154 118 135" fill="none" stroke="${O}" stroke-width="4" stroke-linecap="round"/>`;
+  if(m===1)return`<ellipse cx="100" cy="142" rx="9" ry="11" fill="${O}"/>`;
+  if(m===2)return`<path d="M80 134H120Q118 154 100 154Q82 154 80 134Z" fill="${O}"/><path d="M86 134L91 142L96 134ZM104 134L109 142L114 134Z" fill="#fff"/>`;
+  if(m===3)return`<path d="M78 141q5.5 -7 11 0t11 0t11 0t11 0" fill="none" stroke="${O}" stroke-width="4" stroke-linecap="round"/>`;
+  return`<path d="M84 134Q100 158 116 134Z" fill="${O}"/><ellipse cx="100" cy="147" rx="7" ry="5" fill="#ff8fa3"/>`;
+}
+function svg(k){
+  const K=KINDS[k],T=TOP[K.b],d=shade(K.c,-.3),ey=K.b===6?106:100;
+  return`<svg viewBox="0 0 200 200" role="img" aria-label="生き物"><rect width="200" height="200" fill="${shade(K.c,.82)}"/><circle cx="100" cy="112" r="88" fill="${shade(K.c,.65)}"/>`+
+  `<ellipse cx="100" cy="182" rx="58" ry="7" fill="rgba(34,24,58,.15)"/>`+
+  `<ellipse cx="78" cy="173" rx="15" ry="9" fill="${d}" stroke="${O}" stroke-width="3.5"/><ellipse cx="122" cy="173" rx="15" ry="9" fill="${d}" stroke="${O}" stroke-width="3.5"/>`+
+  extra(K.x,T,K.c)+body(K.b,K.c)+
+  `<path d="M70 ${T+30}q15 -14 34 -12" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="6" stroke-linecap="round"/>`+
+  (K.sp?`<g fill="rgba(255,255,255,.4)"><circle cx="66" cy="148" r="7"/><circle cx="134" cy="122" r="9"/><circle cx="124" cy="158" r="5"/></g>`:'')+
+  `<ellipse cx="68" cy="126" rx="9" ry="5" fill="#ff8fa3" opacity=".55"/><ellipse cx="132" cy="126" rx="9" ry="5" fill="#ff8fa3" opacity=".55"/>`+
+  eyes(K.e,K.sl,ey)+mouth(K.m)+`</svg>`;
+}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const save=()=>{try{localStorage.setItem('njmj',JSON.stringify({S,hist,names:setupNames}))}catch(e){}};
+let S=null,hist=[],setupNames=['プレイヤー1','プレイヤー2','プレイヤー3'],msg='',anim=false,showDex=false;
+try{const L=JSON.parse(localStorage.getItem('njmj')||'null');if(L){S=L.S;hist=L.hist||[];if(L.names?.length)setupNames=L.names}}catch(e){}
+
+$('parade').innerHTML=KINDS.map((_,i)=>`<div class="mini">${svg(i)}</div>`).join('');
+function renderPlist(){
+  $('plist').innerHTML=setupNames.map((n,i)=>`<div class="prow"><input id="pn${i}" value="${esc(n)}" maxlength="12" aria-label="プレイヤー${i+1}の名前"><button class="ghost" data-del="${i}" ${setupNames.length<=2?'disabled':''} aria-label="削除">×</button></div>`).join('');
+  $('addP').disabled=setupNames.length>=8;
+}
+$('plist').addEventListener('input',e=>{const i=+e.target.id.slice(2);setupNames[i]=e.target.value;save()});
+$('plist').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){setupNames.splice(+d,1);renderPlist();save()}});
+$('addP').onclick=()=>{setupNames.push('プレイヤー'+(setupNames.length+1));renderPlist();save()};
+
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function newGame(){
+  const kinds=+$('kinds').value,per=+$('per').value;
+  const pick=shuffle(KINDS.map((_,i)=>i)).slice(0,kinds);
+  const players=setupNames.map((n,i)=>({n:n.trim()||'プレイヤー'+(i+1),s:0}));
+  S={players,deck:shuffle(pick.flatMap(k=>Array(per).fill(k))),pile:[],names:{},phase:'flip',total:kinds*per};
+  hist=[];msg='';showDex=false;show();
+}
+function push(){hist.push(JSON.stringify(S));if(hist.length>80)hist.shift()}
+function flip(){
+  if(!S||S.phase!=='flip')return;
+  if(!S.deck.length){end();return}
+  push();const k=S.deck.pop();S.pile.push(k);
+  S.phase=S.names[k]!=null?'call':'name';msg='';anim=true;render();
+  if(S.phase==='name')setTimeout(()=>$('nameIn')?.focus(),60);
+}
+function setName(){
+  const v=$('nameIn').value.trim();if(!v)return;
+  const top=S.pile.at(-1);
+  if(Object.values(S.names).includes(v)){msg=`「${v}」はもう使われてるよ！別の名前に`;render();return}
+  push();S.names[top]=v;S.phase='flip';msg=`「${v}」誕生！`;render();
+}
+function award(i){
+  if(S.phase!=='call')return;
+  push();const n=S.pile.length,nm=S.names[S.pile.at(-1)];
+  S.players[i].s+=n;S.pile=[];S.phase='flip';msg=`${S.players[i].n} が「${nm}」で ${n}枚ゲット！`;render();
+  if(!S.deck.length)setTimeout(end,700);
+}
+function pass(){push();S.phase='flip';msg=`誰も言えず… 場に ${S.pile.length}枚 たまってる！`;render();if(!S.deck.length)setTimeout(end,700)}
+function end(){
+  const r=S.players.map((p,i)=>({...p,i})).sort((a,b)=>b.s-a.s);
+  let rank=0,prev=-1;
+  $('resultEl').innerHTML=r.map((p,j)=>{if(p.s!==prev){rank=j+1;prev=p.s}return`<li value="${rank}">${esc(p.n)}　<b>${p.s}枚</b>${rank===1?' 👑':''}</li>`}).join('')+(S.pile.length?`<p class="note">場に残った ${S.pile.length}枚 は誰のものにもなりません</p>`:'');
+  $('endEl').classList.remove('hide');
+}
+function render(){
+  if(!S)return;
+  const top=S.pile.at(-1),known=top!=null&&S.names[top]!=null;
+  $('deckN').textContent=`山札 ${S.deck.length} / ${S.total}`;
+  const de=$('deckEl');de.classList.toggle('empty',!S.deck.length);de.textContent=S.deck.length?(S.phase==='flip'?'めくる':'…'):'おしまい';
+  $('pileEl').innerHTML=top==null?`<div class="card blank">山札をタップして<br>最初の1枚をめくろう</div>`:
+    `<div class="card ${anim?'flip':''}">${svg(top)}<div class="pilen">場 ${S.pile.length}枚</div><div class="tag" id="tagEl">${S.phase==='name'?'？？？　はじめまして':S.phase==='call'?'この子の名前は…？':esc(S.names[top]||'')}</div></div>`;
+  anim=false;
+  let a='';
+  if(S.phase==='name')a=`<p class="prompt">はじめて見る生き物！名前をつけて</p><div class="namebox"><input id="nameIn" maxlength="20" placeholder="例：もふもふロケット" autocomplete="off"><button class="pri" id="nameBtn">名前をつける</button></div>`;
+  else if(S.phase==='call')a=`<p class="prompt">名前を叫べ！ 一番早かったのは？</p><div class="who">${S.players.map((p,i)=>`<button data-aw="${i}">${i<9?`<span style="opacity:.5">${i+1}</span> `:''}${esc(p.n)}</button>`).join('')}</div><div class="sub"><button class="ghost" id="passBtn">誰も言えなかった</button><button class="ghost" id="peekBtn">答えを見る</button></div>`;
+  else a=`<div class="sub"><button class="pri" id="flipBtn" ${S.deck.length?'':'disabled'}>次のカードをめくる</button>${S.deck.length?'':'<button id="endBtn">結果を見る</button>'}</div>`;
+  $('actionEl').innerHTML=`<div class="toast" aria-live="polite">${esc(msg)}</div>`+a;
+  const mx=Math.max(...S.players.map(p=>p.s));
+  $('scoreEl').innerHTML=S.players.map((p,i)=>`<li><span><span class="k">${i+1}</span>${esc(p.n)}${p.s&&p.s===mx?' 👑':''}</span><b>${p.s}枚</b></li>`).join('');
+  const ks=Object.keys(S.names);
+  $('dexEl').innerHTML=`<h2>名づけた生き物 ${ks.length}</h2>`+(ks.length?ks.map(k=>`<figure>${svg(+k)}<figcaption>${showDex?esc(S.names[k]):'？？？'}</figcaption></figure>`).join('')+`<button class="ghost" id="dexBtn" style="grid-column:1/-1">${showDex?'名前をかくす':'名前をのぞく（カンニング）'}</button>`:'<p class="note" style="grid-column:1/-1;margin:0">まだいません。名づけた生き物がここに並びます</p>');
+  $('undoBtn').disabled=!hist.length;
+  save();
+}
+function show(){
+  const g=!!S;$('setup').classList.toggle('hide',g);$('game').classList.toggle('hide',!g);
+  $('undoBtn').classList.toggle('hide',!g);$('quitBtn').classList.toggle('hide',!g);$('endEl').classList.add('hide');
+  if(g)render();else{renderPlist();save()}
+}
+$('actionEl').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.id==='nameBtn')setName();else if(b.id==='flipBtn')flip();else if(b.id==='passBtn')pass();else if(b.id==='endBtn')end();
+  else if(b.id==='peekBtn'){$('tagEl').textContent=S.names[S.pile.at(-1)];b.disabled=true}
+  else if(b.dataset.aw!=null)award(+b.dataset.aw);
+});
+$('actionEl').addEventListener('keydown',e=>{if(e.target.id==='nameIn'&&e.key==='Enter'&&!e.isComposing)setName()});
+$('dexEl').addEventListener('click',e=>{if(e.target.id==='dexBtn'){showDex=!showDex;render()}});
+$('deckEl').onclick=flip;
+$('deckEl').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();flip()}};
+$('startBtn').onclick=newGame;
+$('undoBtn').onclick=()=>{if(hist.length){S=JSON.parse(hist.pop());msg='ひとつ戻しました';$('endEl').classList.add('hide');render()}};
+$('quitBtn').onclick=()=>{S=null;show()};
+$('toSetup').onclick=()=>{S=null;show()};
+$('againBtn').onclick=()=>{setupNames=S.players.map(p=>p.n);newGame()};
+document.addEventListener('keydown',e=>{
+  if(!S||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(e.key===' '&&S.phase==='flip'){e.preventDefault();flip()}
+  else if(/^[1-9]$/.test(e.key)&&S.phase==='call'&&S.players[+e.key-1])award(+e.key-1);
+});
+show();
+}
+</script>
+</body>
+</html>
