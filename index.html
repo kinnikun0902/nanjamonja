@@ -3,140 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>なんじゃもんじゃ</title>
+<title>なんじゃもんじゃ オンライン</title>
+<meta name="description" content="ログインなしで、みんなのスマホから遊べるなんじゃもんじゃ風カードゲーム">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE: にぎやかなパーティーゲーム。声を出して笑う夜。
-   IDEA: テーブルの上の山札とめくられたカード。
-   PICTURE: めくった瞬間のオリジナル生き物カードを大きく中央に。
-   COLOUR and TYPE: ひまわり色の卓、インクの紺、カードは白、差し色はコーラル。Dela Gothic One＋M PLUS Rounded。
-   LAYOUT: 左に山札とカード、右にプレイヤー。600px未満は縦積み。 */
-:root{color-scheme:light dark;--bg:light-dark(#ffd84d,#1b1f3b);--table:light-dark(#ffc928,#252b52);--ink:light-dark(#22183a,#f4efff);--card:#fffdf7;--cardink:#22183a;--soft:light-dark(rgba(34,24,58,.08),rgba(255,255,255,.08));--line:light-dark(#22183a,#f4efff);--acc:#ff5d73;--muted:light-dark(#5b4d73,#b9b2d6)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+:root{color-scheme:light dark;--bg:light-dark(#ffd84d,#1b1f3b);--table:light-dark(#ffc928,#252b52);--ink:light-dark(#22183a,#f4efff);--card:#fffdf7;--cardink:#22183a;--soft:light-dark(rgba(34,24,58,.08),rgba(255,255,255,.08));--line:light-dark(#22183a,#f4efff);--acc:#ff5d73;--ok:#2fae6b;--muted:light-dark(#5b4d73,#b9b2d6)}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c",system-ui,sans-serif;overflow-x:clip;min-height:100vh;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.25) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.18) 0 2px,transparent 3px);background-size:46px 46px,62px 62px}
-h1{font:400 clamp(30px,5vw,46px)/1.05 "Dela Gothic One",sans-serif;margin:0;letter-spacing:.02em}
+h1{font:400 clamp(28px,5vw,44px)/1.05 "Dela Gothic One",sans-serif;margin:0}
+h2{font:400 20px/1.2 "Dela Gothic One",sans-serif;margin:0 0 10px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px max(4vw,16px) 6px;max-width:1240px;margin:auto}
 header p{margin:2px 0 0;color:var(--muted);font-size:14px}
 main{max-width:1240px;margin:auto;padding:10px max(4vw,16px) 40px}
 button,input,select{font:inherit;font-size:16px}
-button{min-height:44px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--cardink);font-weight:800;padding:6px 16px;cursor:pointer;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+button{min-height:44px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--cardink);font-weight:800;padding:6px 16px;cursor:pointer;box-shadow:0 4px 0 var(--line)}
 button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 button.pri{background:var(--acc);color:#fff}
 button.ghost{background:transparent;color:var(--ink);box-shadow:none;border-width:2px}
-button:disabled{opacity:.45;cursor:default}
-input,select{min-height:44px;border:3px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--card);color:var(--cardink)}
+button:disabled{opacity:.45;cursor:default;transform:none}
+input,select{min-height:44px;border:3px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--card);color:var(--cardink);width:100%}
 .panel{background:var(--table);border:3px solid var(--line);border-radius:24px;padding:clamp(16px,3vw,28px);box-shadow:0 8px 0 var(--line)}
-/* setup */
-.setup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+.two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
 .parade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.parade .mini{background:var(--card);border:3px solid var(--line);border-radius:16px;aspect-ratio:1}
+.mini{background:var(--card);border:3px solid var(--line);border-radius:16px;aspect-ratio:1;overflow:hidden}
 .mini svg{width:100%;height:100%;display:block}
-.plist{display:grid;gap:8px;margin:10px 0 14px}
-.prow{display:flex;gap:8px}.prow input{flex:1}
-.opts{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
-.opts label{display:grid;gap:4px;font-weight:700;font-size:14px}
-.rules{font-size:14px;color:var(--muted);margin:14px 0 0;padding-left:1.2em}
-/* game */
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>input{flex:1 1 160px;width:auto}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}.or::before,.or::after{content:"";flex:1;border-top:2px dashed currentColor;opacity:.5}
+label.f{display:grid;gap:4px;font-weight:700;font-size:14px}
+.note{font-size:13px;color:var(--muted);margin:0}
+.err{color:var(--acc);font-weight:800;min-height:1.4em;margin:0}
+.code{font:400 clamp(40px,8vw,64px)/1 "Dela Gothic One";letter-spacing:.12em;text-align:center;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:18px;padding:14px 8px}
+.url{font-size:13px;word-break:break-all;background:var(--soft);border-radius:10px;padding:8px 10px}
+.rules{font-size:14px;color:var(--muted);margin:0;padding-left:1.2em}
+.plist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.plist li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700}
+.plist li.turn{outline:3px solid var(--acc);outline-offset:1px}
+.plist li.off{opacity:.45}
+.plist b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-right:6px}.off .dot{background:#999}
+.me{font-size:11px;background:var(--cardink);color:#fff;border-radius:6px;padding:0 5px;margin-left:6px}
 .game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:24px;align-items:start}
 .tablebox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,3vw,30px);align-items:center}
 .deck{display:grid;gap:10px;justify-items:center}
-.back{width:clamp(96px,14vw,140px);aspect-ratio:3/4;border:3px solid var(--line);border-radius:18px;background:repeating-linear-gradient(45deg,#ff5d73 0 12px,#ff7d8f 12px 24px);box-shadow:4px 4px 0 var(--line),8px 8px 0 var(--line);display:grid;place-items:center;color:#fff;font:400 22px "Dela Gothic One";text-shadow:0 2px 0 #22183a;cursor:pointer}
-.back.empty{background:var(--soft);box-shadow:none;border-style:dashed;cursor:default;color:var(--muted);text-shadow:none;font-size:14px}
+.back{width:clamp(90px,13vw,130px);aspect-ratio:3/4;border:3px solid var(--line);border-radius:18px;background:repeating-linear-gradient(45deg,#ff5d73 0 12px,#ff7d8f 12px 24px);box-shadow:4px 4px 0 var(--line),8px 8px 0 var(--line);display:grid;place-items:center;color:#fff;font:400 18px "Dela Gothic One";text-shadow:0 2px 0 #22183a;text-align:center;padding:4px}
+.back.can{cursor:pointer;animation:bob 1.2s ease-in-out infinite}
+.back.empty{background:var(--soft);box-shadow:none;border-style:dashed;color:var(--muted);text-shadow:none;font-size:14px}
+@keyframes bob{50%{transform:translateY(-6px)}}
 .count{font-weight:800;font-size:14px}
-.pilewrap{display:grid;justify-items:center;gap:12px}
-.card{width:min(100%,360px);aspect-ratio:3/4;background:var(--card);border:4px solid var(--line);border-radius:26px;box-shadow:0 10px 0 var(--line);display:grid;grid-template-rows:1fr auto;overflow:hidden;position:relative}
+.pilewrap{display:grid;justify-items:center}
+.card{width:min(100%,340px);aspect-ratio:3/4;background:var(--card);border:4px solid var(--line);border-radius:26px;box-shadow:0 10px 0 var(--line);display:grid;grid-template-rows:1fr auto;overflow:hidden;position:relative}
 .card svg{width:100%;height:100%;display:block}
 .card .tag{background:var(--cardink);color:#fff;text-align:center;font-weight:800;padding:8px;font-size:15px;min-height:42px}
-.card.blank{display:grid;place-items:center;color:var(--muted);background:var(--soft);border-style:dashed;box-shadow:none;text-align:center;padding:20px}
+.card.blank{place-items:center;color:var(--muted);background:var(--soft);border-style:dashed;box-shadow:none;text-align:center;padding:20px;grid-template-rows:1fr}
 .flip{animation:flip .45s ease-out}
 @keyframes flip{from{transform:perspective(800px) rotateY(90deg) scale(.9)}to{transform:none}}
 .pilen{position:absolute;top:10px;right:10px;background:var(--acc);color:#fff;font-weight:800;border:3px solid var(--cardink);border-radius:999px;padding:0 10px;font-size:14px}
-.action{margin-top:18px;display:grid;gap:12px}
-.prompt{font:400 clamp(20px,3vw,28px)/1.2 "Dela Gothic One";text-align:center;margin:0}
-.namebox{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.namebox input{flex:1 1 220px;max-width:340px}
-.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-.who button{font-size:17px}
-.sub{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.toast{text-align:center;font-weight:800;min-height:1.6em}
-.score h2,.dex h2{font:400 20px "Dela Gothic One";margin:0 0 10px}
-.score ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.score li{display:flex;justify-content:space-between;gap:8px;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700}
-.score li b{font-variant-numeric:tabular-nums;white-space:nowrap}
-.score li .k{opacity:.5;font-size:13px;margin-right:6px}
+.status{text-align:center;font-weight:800;margin:16px 0 4px;min-height:1.6em}
+.prompt{font:400 clamp(19px,3vw,26px)/1.25 "Dela Gothic One";text-align:center;margin:6px 0 10px}
+.act{display:grid;gap:10px;justify-items:center}
+.act .row{justify-content:center;width:100%;max-width:520px}
+.timer{width:100%;max-width:520px;height:12px;border:3px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.timer i{display:block;height:100%;background:var(--acc);transition:width .25s linear}
+.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:14px}
+.log li{background:var(--soft);border-radius:8px;padding:4px 10px}
 .side{display:grid;gap:18px}
 .dex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.dex h2{grid-column:1/-1}
+.dex h2{grid-column:1/-1;margin:0}
 .dex figure{margin:0;background:var(--card);color:var(--cardink);border:3px solid var(--line);border-radius:12px;overflow:hidden;text-align:center;font-size:12px;font-weight:700}
 .dex figure svg{width:100%;aspect-ratio:1;display:block}
 .dex figcaption{padding:2px 4px 4px;overflow-wrap:anywhere}
 .hide{display:none!important}
 .overlay{position:fixed;inset:0;background:rgba(20,14,40,.6);display:grid;place-items:center;padding:16px;z-index:5}
-.overlay .panel{max-width:440px;width:100%;text-align:center}
+.overlay .panel{max-width:460px;width:100%;text-align:center;max-height:90vh;overflow:auto}
 .overlay ol{text-align:left;padding-left:1.4em;font-weight:700;font-size:18px}
-.note{font-size:13px;color:var(--muted)}
-@media(max-width:860px){.game,.setup{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:600px){.tablebox{grid-template-columns:minmax(0,1fr)}.deck{grid-auto-flow:column;align-items:center;justify-content:center}.back{width:84px}.parade{grid-template-columns:repeat(6,minmax(0,1fr))}}
-@media(prefers-reduced-motion:reduce){.flip{animation:none}button{transition:none}}
+@media(max-width:860px){.game,.two{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.tablebox{grid-template-columns:minmax(0,1fr)}.deck{grid-auto-flow:column;align-items:center;justify-content:center}.back{width:78px;font-size:13px}.parade{grid-template-columns:repeat(6,minmax(0,1fr))}.card{width:min(100%,280px)}}
+@media(prefers-reduced-motion:reduce){.flip,.back.can,.shake{animation:none}}
 </style>
 </head>
 <body>
 <header>
-  <div><h1>なんじゃもんじゃ</h1><p>めくって、名づけて、叫べ！ 1台を囲んでも、画面共有でも遊べます</p></div>
-  <div class="sub"><button class="ghost hide" id="undoBtn">ひとつ戻す</button><button class="ghost hide" id="quitBtn">設定にもどる</button></div>
+  <div><h1>なんじゃもんじゃ</h1><p>ログイン不要。URLを送って、みんなのスマホから同じ部屋で遊べます</p></div>
+  <div id="roomTag" class="note"></div>
 </header>
 <main>
-  <section id="setup" class="setup">
-    <div class="panel">
-      <div class="parade" id="parade"></div>
-      <p class="note">登場するのは全12種のオリジナル生き物たち</p>
-    </div>
-    <div class="panel">
-      <h2 style="font:400 22px 'Dela Gothic One';margin:0">プレイヤー</h2>
-      <div class="plist" id="plist"></div>
-      <button class="ghost" id="addP">＋ プレイヤーを追加</button>
-      <div class="opts">
-        <label>生き物の種類<select id="kinds"><option value="6">6種（かんたん）</option><option value="9">9種</option><option value="12" selected>12種（本気）</option></select></label>
-        <label>1種あたりの枚数<select id="per"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
+  <!-- ホーム -->
+  <section id="home" class="two">
+    <div class="panel"><div class="parade" id="parade"></div><p class="note" style="margin-top:10px">登場するのは全12種のオリジナル生き物たち</p></div>
+    <div class="panel stack">
+      <label class="f">あなたの名前<input id="myName" maxlength="12" placeholder="例：たろう" autocomplete="nickname"></label>
+      <div id="joinBox" class="stack hide">
+        <p style="margin:0;font-weight:800">部屋 <span id="joinCode"></span> に招待されています</p>
+        <button class="pri" id="joinBtn">この部屋に参加する</button>
+        <div class="or">または</div>
       </div>
-      <button class="pri" id="startBtn" style="width:100%">ゲームスタート</button>
+      <button id="createBtn" class="pri">部屋をつくる（ホストになる）</button>
+      <div class="or">コードで参加</div>
+      <div class="row"><input id="codeIn" maxlength="5" placeholder="部屋コード（5文字）" autocapitalize="characters"><button id="codeBtn">参加</button></div>
+      <p class="err" id="homeErr"></p>
       <ol class="rules">
-        <li>山札を1枚めくる。はじめて見る生き物なら、めくった人が名前をつける。</li>
-        <li>見たことのある生き物が出たら、その名前を一番早く叫んだ人が場のカードを全部もらう。</li>
-        <li>誰も言えなければカードは場に残り、次の勝者がまとめて獲得。山札が尽きたら一番多く持っている人の勝ち！</li>
+        <li>めくる番の人が山札をめくる。はじめて見る生き物なら、その人が名前をつける。</li>
+        <li>名前のある生き物が出たら、全員が早押しで名前を入力。最初に正解した人が場のカードを全部もらう。</li>
+        <li>制限時間内に誰も当てられなければ、カードは場に残って次の正解者のものに。山札が尽きたら一番多く持っている人の勝ち！</li>
       </ol>
-      <p class="note">ショートカット：Space でめくる／数字キーでその番号のプレイヤーに得点</p>
     </div>
   </section>
 
+  <!-- ロビー -->
+  <section id="lobby" class="two hide">
+    <div class="panel stack">
+      <h2>部屋コード</h2>
+      <div class="code" id="codeBig">-----</div>
+      <div class="url" id="inviteUrl"></div>
+      <div class="row"><button id="copyBtn" class="pri" style="flex:1">招待URLをコピー</button></div>
+      <p class="note">このURLをLINEなどで送れば、相手は名前を入れるだけで参加できます。ホストがページを閉じるとゲームが終わるので注意。</p>
+    </div>
+    <div class="panel stack">
+      <h2>参加者 <span id="pCount"></span></h2>
+      <ul class="plist" id="lobbyList"></ul>
+      <div id="hostOpts" class="stack hide">
+        <div class="row">
+          <label class="f" style="flex:1">生き物の種類<select id="kinds"><option value="6">6種（かんたん）</option><option value="9">9種</option><option value="12" selected>12種（本気）</option></select></label>
+          <label class="f" style="flex:1">1種あたりの枚数<select id="per"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
+          <label class="f" style="flex:1">回答の制限時間<select id="secs"><option value="15">15秒</option><option value="20" selected>20秒</option><option value="30">30秒</option></select></label>
+        </div>
+        <button class="pri" id="startBtn">ゲームスタート</button>
+      </div>
+      <p class="note" id="waitNote">ホストがスタートするのを待っています…</p>
+    </div>
+  </section>
+
+  <!-- ゲーム -->
   <section id="game" class="game hide">
     <div class="panel">
       <div class="tablebox">
-        <div class="deck"><div class="back" id="deckEl" role="button" tabindex="0" aria-label="山札をめくる">めくる</div><div class="count" id="deckN"></div></div>
+        <div class="deck"><div class="back" id="deckEl" role="button" tabindex="0" aria-label="山札をめくる"></div><div class="count" id="deckN"></div></div>
         <div class="pilewrap" id="pileEl"></div>
       </div>
-      <div class="action" id="actionEl"></div>
+      <p class="status" id="statusEl" aria-live="polite"></p>
+      <div class="act" id="actEl"></div>
     </div>
     <div class="side">
-      <div class="panel score"><h2>獲得カード</h2><ol id="scoreEl"></ol></div>
+      <div class="panel"><h2>獲得カード</h2><ul class="plist" id="scoreEl"></ul></div>
+      <div class="panel"><h2>できごと</h2><ul class="log" id="logEl"></ul></div>
       <div class="panel dex" id="dexEl"></div>
     </div>
   </section>
 </main>
-<div class="overlay hide" id="endEl"><div class="panel"><h2 style="font:400 28px 'Dela Gothic One';margin:0 0 6px">けっか発表！</h2><ol id="resultEl"></ol><div class="sub"><button class="pri" id="againBtn">同じメンバーでもう一度</button><button id="toSetup">設定にもどる</button></div></div></div>
+<div class="overlay hide" id="endEl"><div class="panel stack"><h2 style="font-size:28px">けっか発表！</h2><ol id="resultEl"></ol><div class="dex" id="endDex"></div><div class="row" style="justify-content:center"><button class="pri hide" id="againBtn">同じメンバーでもう一度</button><p class="note" id="againNote">ホストが次のゲームを始めるのを待っています</p></div></div></div>
+<div class="overlay hide" id="msgEl"><div class="panel stack"><h2 id="msgTitle"></h2><p id="msgBody" style="margin:0"></p><button class="pri" id="msgBtn">トップにもどる</button></div></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script>
 {
+/* ---------- オリジナル生き物 ---------- */
 const KINDS=[
  {c:'#f4a63a',b:0,e:2,m:0,x:'tuft'},{c:'#4fb3a9',b:1,e:1,m:2,x:'antenna'},{c:'#e8546b',b:2,e:3,m:1,x:'',sp:1},
  {c:'#8a6fd6',b:3,e:2,m:3,x:'horns'},{c:'#5aa0e6',b:4,e:2,m:0,x:'crown',sl:1},{c:'#f2d14b',b:5,e:1,m:4,x:'ears'},
  {c:'#7cc35a',b:6,e:3,m:2,x:'horns'},{c:'#d96fb5',b:0,e:1,m:3,x:'antenna',sp:1},{c:'#f07f4f',b:1,e:2,m:1,x:'ears'},
  {c:'#3d4a8f',b:2,e:2,m:4,x:'tuft',sl:1},{c:'#45c4d8',b:3,e:1,m:0,x:'crown'},{c:'#a3754f',b:4,e:3,m:2,x:'horns',sp:1}];
-const TOP=[57,45,38,42,30,43,70];
-const O='#22183a';
-const shade=(h,a)=>{const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const f=v=>Math.round(Math.max(0,Math.min(255,v+(a<0?v*a:(255-v)*a))));return`rgb(${f(r)},${f(g)},${f(b)})`};
+const TOP=[57,45,38,42,30,43,70],O='#22183a';
+const shade=(h,a)=>{const n=parseInt(h.slice(1),16);const f=v=>Math.round(Math.max(0,Math.min(255,v+(a<0?v*a:(255-v)*a))));return`rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`};
 function body(t,c){
   const s=`fill="${c}" stroke="${O}" stroke-width="4" stroke-linejoin="round"`;
   if(t===0)return`<ellipse cx="100" cy="115" rx="62" ry="58" ${s}/>`;
@@ -180,102 +211,232 @@ function svg(k){
   `<ellipse cx="68" cy="126" rx="9" ry="5" fill="#ff8fa3" opacity=".55"/><ellipse cx="132" cy="126" rx="9" ry="5" fill="#ff8fa3" opacity=".55"/>`+
   eyes(K.e,K.sl,ey)+mouth(K.m)+`</svg>`;
 }
+
+/* ---------- 共通 ---------- */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const save=()=>{try{localStorage.setItem('njmj',JSON.stringify({S,hist,names:setupNames}))}catch(e){}};
-let S=null,hist=[],setupNames=['プレイヤー1','プレイヤー2','プレイヤー3'],msg='',anim=false,showDex=false;
-try{const L=JSON.parse(localStorage.getItem('njmj')||'null');if(L){S=L.S;hist=L.hist||[];if(L.names?.length)setupNames=L.names}}catch(e){}
-
-$('parade').innerHTML=KINDS.map((_,i)=>`<div class="mini">${svg(i)}</div>`).join('');
-function renderPlist(){
-  $('plist').innerHTML=setupNames.map((n,i)=>`<div class="prow"><input id="pn${i}" value="${esc(n)}" maxlength="12" aria-label="プレイヤー${i+1}の名前"><button class="ghost" data-del="${i}" ${setupNames.length<=2?'disabled':''} aria-label="削除">×</button></div>`).join('');
-  $('addP').disabled=setupNames.length>=8;
-}
-$('plist').addEventListener('input',e=>{const i=+e.target.id.slice(2);setupNames[i]=e.target.value;save()});
-$('plist').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){setupNames.splice(+d,1);renderPlist();save()}});
-$('addP').onclick=()=>{setupNames.push('プレイヤー'+(setupNames.length+1));renderPlist();save()};
-
+const norm=s=>String(s).normalize('NFKC').toLowerCase().replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60)).replace(/[\s・、。,.!！?？~〜ー\-_'"「」]/g,'');
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-function newGame(){
-  const kinds=+$('kinds').value,per=+$('per').value;
-  const pick=shuffle(KINDS.map((_,i)=>i)).slice(0,kinds);
-  const players=setupNames.map((n,i)=>({n:n.trim()||'プレイヤー'+(i+1),s:0}));
-  S={players,deck:shuffle(pick.flatMap(k=>Array(per).fill(k))),pile:[],names:{},phase:'flip',total:kinds*per};
-  hist=[];msg='';showDex=false;show();
+const PREFIX='njmj-v1-';
+const CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const view=id=>{for(const s of['home','lobby','game'])$(s).classList.toggle('hide',s!==id)};
+function fatal(title,body){$('msgTitle').textContent=title;$('msgBody').textContent=body;$('msgEl').classList.remove('hide')}
+$('msgBtn').onclick=()=>{location.href=location.pathname};
+
+let peer=null,isHost=false,myId=null,conn=null,code='',V=null,recvAt=0,lastKey='',lastTop=null;
+
+/* ---------- ホスト側のゲーム進行 ---------- */
+let G=null;const conns=new Map();
+function hostInit(){G={phase:'lobby',players:[],deck:[],pile:[],names:{},turn:0,total:0,secs:20,deadline:0,passes:[],log:[],msg:''}}
+const online=()=>G.players.filter(p=>p.on);
+const turnP=()=>G.players[G.turn];
+function log(s){G.log.unshift(s);G.log=G.log.slice(0,8)}
+function pub(){
+  const t=turnP();
+  return{phase:G.phase,players:G.players.map(p=>({id:p.id,name:p.name,score:p.score,on:p.on})),deckN:G.deck.length,total:G.total,
+    pileN:G.pile.length,top:G.pile.length?G.pile.at(-1):null,named:Object.keys(G.names).map(Number),turnId:t?t.id:null,
+    passes:G.passes,remain:G.phase==='call'?Math.max(0,(G.deadline-Date.now())/1000):0,secs:G.secs,log:G.log,msg:G.msg,
+    names:G.phase==='end'?G.names:null,seq:Date.now()};
 }
-function push(){hist.push(JSON.stringify(S));if(hist.length>80)hist.shift()}
-function flip(){
-  if(!S||S.phase!=='flip')return;
-  if(!S.deck.length){end();return}
-  push();const k=S.deck.pop();S.pile.push(k);
-  S.phase=S.names[k]!=null?'call':'name';msg='';anim=true;render();
-  if(S.phase==='name')setTimeout(()=>$('nameIn')?.focus(),60);
+function broadcast(){
+  const s=pub();
+  for(const[pid,c] of conns){try{c.send({t:'state',s,me:pid})}catch(e){}}
+  onState(s,'host');
 }
-function setName(){
-  const v=$('nameIn').value.trim();if(!v)return;
-  const top=S.pile.at(-1);
-  if(Object.values(S.names).includes(v)){msg=`「${v}」はもう使われてるよ！別の名前に`;render();return}
-  push();S.names[top]=v;S.phase='flip';msg=`「${v}」誕生！`;render();
+function nextTurn(){
+  if(!online().length)return;
+  for(let i=1;i<=G.players.length;i++){const j=(G.turn+i)%G.players.length;if(G.players[j].on){G.turn=j;return}}
 }
-function award(i){
-  if(S.phase!=='call')return;
-  push();const n=S.pile.length,nm=S.names[S.pile.at(-1)];
-  S.players[i].s+=n;S.pile=[];S.phase='flip';msg=`${S.players[i].n} が「${nm}」で ${n}枚ゲット！`;render();
-  if(!S.deck.length)setTimeout(end,700);
+function ensureTurnOnline(){if(turnP()&&!turnP().on)nextTurn()}
+function afterRound(){nextTurn();G.phase='flip';if(!G.deck.length)G.phase='end'}
+function canAct(pid){const t=turnP();return t&&(t.id===pid||!t.on)}
+function handle(pid,m){
+  const me=G.players.find(p=>p.id===pid);if(!me)return;
+  if(m.t==='flip'&&G.phase==='flip'&&canAct(pid)&&G.deck.length){
+    const k=G.deck.pop();G.pile.push(k);
+    if(G.names[k]!=null){G.phase='call';G.passes=[];G.deadline=Date.now()+G.secs*1000;G.msg=`${me.name} がめくった！ 名前を早押しで入力！`}
+    else{G.phase='name';G.msg=`はじめて見る生き物！ ${me.name} が名前をつけます`}
+  }else if(m.t==='name'&&G.phase==='name'&&canAct(pid)){
+    const v=String(m.v||'').trim().slice(0,20);if(!v)return;
+    if(Object.values(G.names).some(n=>norm(n)===norm(v))||!norm(v)){sendTo(pid,{t:'bad',why:'その名前はもう使われているか、使えない名前です'});return}
+    G.names[G.pile.at(-1)]=v;G.msg=`「${v}」誕生！`;log(`${me.name} が「${v}」と名づけた`);afterRound();
+  }else if(m.t==='ans'&&G.phase==='call'){
+    const v=String(m.v||'');
+    if(norm(v)&&norm(v)===norm(G.names[G.pile.at(-1)])){
+      const n=G.pile.length,nm=G.names[G.pile.at(-1)];me.score+=n;G.pile=[];
+      G.msg=`${me.name} が「${nm}」で ${n}枚ゲット！`;log(`${me.name} 正解「${nm}」+${n}枚`);afterRound();
+    }else{sendTo(pid,{t:'bad',why:'ちがう！'});return}
+  }else if(m.t==='pass'&&G.phase==='call'){
+    if(!G.passes.includes(pid))G.passes.push(pid);
+    if(online().every(p=>G.passes.includes(p.id)))nobody();
+  }else if(m.t==='start'&&pid==='host'&&(G.phase==='lobby'||G.phase==='end')){
+    const kinds=+m.kinds,per=+m.per;G.secs=+m.secs||20;
+    const pick=shuffle(KINDS.map((_,i)=>i)).slice(0,kinds);
+    G.deck=shuffle(pick.flatMap(k=>Array(per).fill(k)));G.total=G.deck.length;G.pile=[];G.names={};G.log=[];
+    G.players=G.players.filter(p=>p.on);G.players.forEach(p=>p.score=0);G.turn=Math.random()*G.players.length|0;
+    G.phase='flip';G.msg='ゲームスタート！';
+  }else if(m.t==='lobby'&&pid==='host'){G.phase='lobby';G.msg=''}
+  else return;
+  broadcast();
 }
-function pass(){push();S.phase='flip';msg=`誰も言えず… 場に ${S.pile.length}枚 たまってる！`;render();if(!S.deck.length)setTimeout(end,700)}
-function end(){
-  const r=S.players.map((p,i)=>({...p,i})).sort((a,b)=>b.s-a.s);
-  let rank=0,prev=-1;
-  $('resultEl').innerHTML=r.map((p,j)=>{if(p.s!==prev){rank=j+1;prev=p.s}return`<li value="${rank}">${esc(p.n)}　<b>${p.s}枚</b>${rank===1?' 👑':''}</li>`}).join('')+(S.pile.length?`<p class="note">場に残った ${S.pile.length}枚 は誰のものにもなりません</p>`:'');
-  $('endEl').classList.remove('hide');
+function nobody(){
+  const nm=G.names[G.pile.at(-1)];G.msg=`誰も当てられず… 正解は「${nm}」。場に ${G.pile.length}枚 たまってる！`;log(`誰も当てられず（正解「${nm}」）`);afterRound();
+}
+function sendTo(pid,m){if(pid==='host')onMsg(m);else{const c=conns.get(pid);try{c&&c.send(m)}catch(e){}}}
+setInterval(()=>{if(isHost&&G&&G.phase==='call'&&Date.now()>G.deadline){nobody();broadcast()}},500);
+
+function startHost(name){
+  isHost=true;hostInit();code=Array.from({length:5},()=>CH[Math.random()*CH.length|0]).join('');
+  peer=new Peer(PREFIX+code);
+  peer.on('open',()=>{
+    myId='host';G.players.push({id:'host',name,score:0,on:true});
+    history.replaceState(null,'','?r='+code);broadcast();
+  });
+  peer.on('error',e=>{
+    if(e.type==='unavailable-id'){peer.destroy();startHost(name);return}
+    if(e.type==='peer-unavailable')return;
+    $('homeErr').textContent='接続に失敗しました（'+e.type+'）。通信環境を確認してもう一度お試しください';
+  });
+  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
+  peer.on('connection',c=>{
+    c.on('data',d=>{
+      if(!d||typeof d!=='object')return;
+      if(d.t==='join'){
+        let nm=String(d.name||'').trim().slice(0,12)||'ななし';
+        let p=G.players.find(p=>!p.on&&p.name===nm);
+        if(p){p.id=c.peer;p.on=true;log(`${nm} が戻ってきた`)}
+        else{
+          if(G.players.some(q=>q.name===nm))nm+=(G.players.length+1);
+          p={id:c.peer,name:nm,score:0,on:true};G.players.push(p);log(`${nm} が参加`);
+        }
+        conns.set(c.peer,c);broadcast();
+      }else handle(c.peer,d);
+    });
+    c.on('close',()=>{
+      conns.delete(c.peer);const p=G.players.find(p=>p.id===c.peer);if(!p)return;
+      if(G.phase==='lobby')G.players=G.players.filter(q=>q!==p);else{p.on=false;log(`${p.name} が退出`)}
+      if(G.phase==='call'&&online().length&&online().every(q=>G.passes.includes(q.id)))nobody();
+      ensureTurnOnline();broadcast();
+    });
+  });
+}
+
+/* ---------- 参加者側 ---------- */
+function startClient(name,rc){
+  code=rc;$('homeErr').textContent='接続中…';
+  peer=new Peer();
+  const to=setTimeout(()=>{if(!V)$('homeErr').textContent='部屋が見つかりません。コードを確認するか、ホストに新しいURLをもらってください'},12000);
+  peer.on('open',()=>{
+    conn=peer.connect(PREFIX+rc,{reliable:true});
+    conn.on('open',()=>conn.send({t:'join',name}));
+    conn.on('data',d=>{clearTimeout(to);onMsg(d)});
+    conn.on('close',()=>fatal('接続が切れました','ホストがページを閉じたか、通信が途切れました。同じURLを開き直すと、同じ名前で復帰できます。'));
+  });
+  peer.on('error',e=>{
+    if(e.type==='peer-unavailable'){$('homeErr').textContent='部屋が見つかりません。コードを確認するか、ホストに新しいURLをもらってください'}
+    else $('homeErr').textContent='接続に失敗しました（'+e.type+'）';
+  });
+}
+function send(m){if(isHost)handle('host',m);else if(conn&&conn.open)conn.send(m)}
+function onMsg(d){
+  if(d.t==='state')onState(d.s,d.me);
+  else if(d.t==='bad'){const i=$('ansIn')||$('nameIn');if(i){i.classList.remove('shake');void i.offsetWidth;i.classList.add('shake');i.select()}$('badEl')&&($('badEl').textContent=d.why)}
+}
+
+/* ---------- 画面描画 ---------- */
+function onState(s,me){V=s;myId=me;recvAt=Date.now();render()}
+const pname=id=>(V.players.find(p=>p.id===id)||{}).name||'？';
+function plist(el,withScore){
+  const mx=Math.max(0,...V.players.map(p=>p.score));
+  el.innerHTML=V.players.map(p=>`<li class="${p.on?'':'off'} ${withScore&&p.id===V.turnId&&(V.phase==='flip'||V.phase==='name')?'turn':''}"><span><span class="dot"></span>${esc(p.name)}${p.id==='host'?' <span class="note">ホスト</span>':''}${p.id===myId?'<span class="me">あなた</span>':''}${withScore&&p.score&&p.score===mx?' 👑':''}</span>${withScore?`<b>${p.score}枚</b>`:''}</li>`).join('');
 }
 function render(){
-  if(!S)return;
-  const top=S.pile.at(-1),known=top!=null&&S.names[top]!=null;
-  $('deckN').textContent=`山札 ${S.deck.length} / ${S.total}`;
-  const de=$('deckEl');de.classList.toggle('empty',!S.deck.length);de.textContent=S.deck.length?(S.phase==='flip'?'めくる':'…'):'おしまい';
-  $('pileEl').innerHTML=top==null?`<div class="card blank">山札をタップして<br>最初の1枚をめくろう</div>`:
-    `<div class="card ${anim?'flip':''}">${svg(top)}<div class="pilen">場 ${S.pile.length}枚</div><div class="tag" id="tagEl">${S.phase==='name'?'？？？　はじめまして':S.phase==='call'?'この子の名前は…？':esc(S.names[top]||'')}</div></div>`;
-  anim=false;
-  let a='';
-  if(S.phase==='name')a=`<p class="prompt">はじめて見る生き物！名前をつけて</p><div class="namebox"><input id="nameIn" maxlength="20" placeholder="例：もふもふロケット" autocomplete="off"><button class="pri" id="nameBtn">名前をつける</button></div>`;
-  else if(S.phase==='call')a=`<p class="prompt">名前を叫べ！ 一番早かったのは？</p><div class="who">${S.players.map((p,i)=>`<button data-aw="${i}">${i<9?`<span style="opacity:.5">${i+1}</span> `:''}${esc(p.n)}</button>`).join('')}</div><div class="sub"><button class="ghost" id="passBtn">誰も言えなかった</button><button class="ghost" id="peekBtn">答えを見る</button></div>`;
-  else a=`<div class="sub"><button class="pri" id="flipBtn" ${S.deck.length?'':'disabled'}>次のカードをめくる</button>${S.deck.length?'':'<button id="endBtn">結果を見る</button>'}</div>`;
-  $('actionEl').innerHTML=`<div class="toast" aria-live="polite">${esc(msg)}</div>`+a;
-  const mx=Math.max(...S.players.map(p=>p.s));
-  $('scoreEl').innerHTML=S.players.map((p,i)=>`<li><span><span class="k">${i+1}</span>${esc(p.n)}${p.s&&p.s===mx?' 👑':''}</span><b>${p.s}枚</b></li>`).join('');
-  const ks=Object.keys(S.names);
-  $('dexEl').innerHTML=`<h2>名づけた生き物 ${ks.length}</h2>`+(ks.length?ks.map(k=>`<figure>${svg(+k)}<figcaption>${showDex?esc(S.names[k]):'？？？'}</figcaption></figure>`).join('')+`<button class="ghost" id="dexBtn" style="grid-column:1/-1">${showDex?'名前をかくす':'名前をのぞく（カンニング）'}</button>`:'<p class="note" style="grid-column:1/-1;margin:0">まだいません。名づけた生き物がここに並びます</p>');
-  $('undoBtn').disabled=!hist.length;
-  save();
+  if(!V)return;
+  $('roomTag').textContent='部屋 '+code;
+  if(V.phase==='lobby'){
+    view('lobby');$('endEl').classList.add('hide');
+    $('codeBig').textContent=code;const u=location.origin+location.pathname+'?r='+code;$('inviteUrl').textContent=u;
+    $('pCount').textContent=V.players.length+'人';plist($('lobbyList'),false);
+    $('hostOpts').classList.toggle('hide',!isHost);$('waitNote').classList.toggle('hide',isHost);
+    $('startBtn').textContent=V.players.length<2?'ひとりで試しにスタート':'ゲームスタート';
+    return;
+  }
+  view('game');
+  const myTurn=V.turnId===myId,turnOff=!(V.players.find(p=>p.id===V.turnId)||{}).on;
+  const canFlip=V.phase==='flip'&&(myTurn||turnOff)&&V.deckN>0;
+  const de=$('deckEl');de.classList.toggle('empty',!V.deckN);de.classList.toggle('can',canFlip);
+  de.textContent=!V.deckN?'おしまい':canFlip?'タップで\nめくる':'山札';
+  $('deckN').textContent=`山札 ${V.deckN} / ${V.total}`;
+  const newCard=V.top!==null&&V.deckN!==lastTop;
+  if(V.top===null)$('pileEl').innerHTML=`<div class="card blank">${V.phase==='flip'?`${esc(pname(V.turnId))} が山札を<br>めくるのを待っています`:'場は空っぽ'}</div>`;
+  else $('pileEl').innerHTML=`<div class="card ${newCard?'flip':''}">${svg(V.top)}<div class="pilen">場 ${V.pileN}枚</div><div class="tag">${V.phase==='name'?'？？？　はじめまして':V.phase==='call'?'この子の名前は…？':'名前つき'}</div></div>`;
+  lastTop=V.deckN;
+  $('statusEl').textContent=V.msg;
+  const key=[V.phase,V.deckN,V.turnId,V.passes.includes(myId),myTurn||turnOff].join('|');
+  if(key!==lastKey){
+    lastKey=key;let a='';
+    if(V.phase==='flip')a=V.deckN?(canFlip?`<button class="pri" id="flipBtn">カードをめくる</button>`:`<p class="prompt">${esc(pname(V.turnId))} の番です</p>`):'';
+    else if(V.phase==='name')a=(myTurn||turnOff)?`<p class="prompt">あなたが名前をつけて！</p><div class="row"><input id="nameIn" maxlength="20" placeholder="例：もふもふロケット" autocomplete="off"><button class="pri" id="nameBtn">決定</button></div><p class="err" id="badEl"></p>`
+      :`<p class="prompt">${esc(pname(V.turnId))} が名前を考え中…</p><p class="note">どんな名前になるか、よく覚えておこう</p>`;
+    else if(V.phase==='call')a=V.passes.includes(myId)?`<div class="timer"><i id="tbar"></i></div><p class="prompt">パスしました。ほかの人の回答待ち…</p>`
+      :`<div class="timer"><i id="tbar"></i></div><p class="prompt">名前を入力！ 早いもの勝ち</p><div class="row"><input id="ansIn" maxlength="20" placeholder="この子の名前は？" autocomplete="off" enterkeyhint="send"><button class="pri" id="ansBtn">回答</button></div><p class="err" id="badEl"></p><button class="ghost" id="passBtn">わからない（パス）</button>`;
+    $('actEl').innerHTML=a;
+    const f=$('ansIn')||$('nameIn');if(f)setTimeout(()=>f.focus(),50);
+  }
+  plist($('scoreEl'),true);
+  $('logEl').innerHTML=V.log.length?V.log.map(l=>`<li>${esc(l)}</li>`).join(''):'<li>まだ何も起きていません</li>';
+  $('dexEl').innerHTML=`<h2>名づけた生き物 ${V.named.length}</h2>`+(V.named.length?V.named.map(k=>`<figure>${svg(k)}<figcaption>？？？</figcaption></figure>`).join(''):'<p class="note" style="grid-column:1/-1">名前がついた生き物がここに並びます（名前は自分で覚えてね）</p>');
+  if(V.phase==='end')showEnd();else $('endEl').classList.add('hide');
+  tick();
 }
-function show(){
-  const g=!!S;$('setup').classList.toggle('hide',g);$('game').classList.toggle('hide',!g);
-  $('undoBtn').classList.toggle('hide',!g);$('quitBtn').classList.toggle('hide',!g);$('endEl').classList.add('hide');
-  if(g)render();else{renderPlist();save()}
+function showEnd(){
+  const r=[...V.players].sort((a,b)=>b.score-a.score);let rank=0,prev=-1;
+  $('resultEl').innerHTML=r.map((p,j)=>{if(p.score!==prev){rank=j+1;prev=p.score}return`<li value="${rank}">${esc(p.name)}${p.id===myId?'（あなた）':''}　<b>${p.score}枚</b>${rank===1?' 👑':''}</li>`}).join('');
+  $('endDex').innerHTML=Object.entries(V.names||{}).map(([k,n])=>`<figure>${svg(+k)}<figcaption>${esc(n)}</figcaption></figure>`).join('');
+  $('againBtn').classList.toggle('hide',!isHost);$('againNote').classList.toggle('hide',isHost);
+  $('endEl').classList.remove('hide');
 }
-$('actionEl').addEventListener('click',e=>{
+function tick(){
+  const b=$('tbar');if(!b||!V||V.phase!=='call')return;
+  const left=Math.max(0,V.remain-(Date.now()-recvAt)/1000);b.style.width=(left/V.secs*100)+'%';
+}
+setInterval(tick,250);
+
+/* ---------- イベント ---------- */
+$('actEl').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
-  if(b.id==='nameBtn')setName();else if(b.id==='flipBtn')flip();else if(b.id==='passBtn')pass();else if(b.id==='endBtn')end();
-  else if(b.id==='peekBtn'){$('tagEl').textContent=S.names[S.pile.at(-1)];b.disabled=true}
-  else if(b.dataset.aw!=null)award(+b.dataset.aw);
+  if(b.id==='flipBtn')send({t:'flip'});
+  else if(b.id==='nameBtn'){const v=$('nameIn').value.trim();if(v)send({t:'name',v})}
+  else if(b.id==='ansBtn'){const v=$('ansIn').value.trim();if(v)send({t:'ans',v})}
+  else if(b.id==='passBtn')send({t:'pass'});
 });
-$('actionEl').addEventListener('keydown',e=>{if(e.target.id==='nameIn'&&e.key==='Enter'&&!e.isComposing)setName()});
-$('dexEl').addEventListener('click',e=>{if(e.target.id==='dexBtn'){showDex=!showDex;render()}});
-$('deckEl').onclick=flip;
-$('deckEl').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();flip()}};
-$('startBtn').onclick=newGame;
-$('undoBtn').onclick=()=>{if(hist.length){S=JSON.parse(hist.pop());msg='ひとつ戻しました';$('endEl').classList.add('hide');render()}};
-$('quitBtn').onclick=()=>{S=null;show()};
-$('toSetup').onclick=()=>{S=null;show()};
-$('againBtn').onclick=()=>{setupNames=S.players.map(p=>p.n);newGame()};
-document.addEventListener('keydown',e=>{
-  if(!S||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
-  if(e.key===' '&&S.phase==='flip'){e.preventDefault();flip()}
-  else if(/^[1-9]$/.test(e.key)&&S.phase==='call'&&S.players[+e.key-1])award(+e.key-1);
+$('actEl').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.isComposing)return;
+  if(e.target.id==='nameIn'){const v=e.target.value.trim();if(v)send({t:'name',v})}
+  if(e.target.id==='ansIn'){const v=e.target.value.trim();if(v)send({t:'ans',v})}
 });
-show();
+$('deckEl').onclick=()=>{if($('deckEl').classList.contains('can'))send({t:'flip'})};
+$('deckEl').onkeydown=e=>{if(e.key==='Enter'&&$('deckEl').classList.contains('can'))send({t:'flip'})};
+$('startBtn').onclick=()=>send({t:'start',kinds:$('kinds').value,per:$('per').value,secs:$('secs').value});
+$('againBtn').onclick=()=>send({t:'lobby'});
+$('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('inviteUrl').textContent);$('copyBtn').textContent='コピーしました！'}catch(e){$('copyBtn').textContent='URLを長押ししてコピーしてね'}setTimeout(()=>$('copyBtn').textContent='招待URLをコピー',2000)};
+window.addEventListener('beforeunload',e=>{if(isHost&&G&&G.players.length>1){e.preventDefault();e.returnValue=''}});
+
+function getName(){const n=$('myName').value.trim();if(!n){$('homeErr').textContent='名前を入れてね';$('myName').focus();return null}ls.set('njmj-name',n);return n}
+function noPeer(){if(typeof Peer==='undefined'){$('homeErr').textContent='通信ライブラリを読み込めませんでした。ページを再読み込みしてください';return true}return false}
+$('createBtn').onclick=()=>{const n=getName();if(!n||noPeer())return;$('createBtn').disabled=true;$('homeErr').textContent='部屋をつくっています…';startHost(n)};
+const joinWith=c=>{const n=getName();if(!n||noPeer())return;c=c.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!==5){$('homeErr').textContent='部屋コードは5文字です';return}
+  $('joinBtn').disabled=$('codeBtn').disabled=true;startClient(n,c)};
+$('codeBtn').onclick=()=>joinWith($('codeIn').value);
+$('joinBtn').onclick=()=>joinWith(new URLSearchParams(location.search).get('r')||'');
+$('myName').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)(new URLSearchParams(location.search).get('r')?$('joinBtn'):$('createBtn')).click()});
+
+$('parade').innerHTML=KINDS.map((_,i)=>`<div class="mini">${svg(i)}</div>`).join('');
+$('myName').value=ls.get('njmj-name')||'';
+const rq=(new URLSearchParams(location.search).get('r')||'').toUpperCase();
+if(rq){$('joinBox').classList.remove('hide');$('joinCode').textContent=rq;$('createBtn').textContent='自分で新しい部屋をつくる'}
+view('home');
 }
 </script>
 </body>
